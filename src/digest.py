@@ -10,7 +10,12 @@ from .config import DIGEST_HOUR, DIGEST_MINUTE, LOOKBACK_DAYS, RUN_ON_START
 from .emailer import send_digest
 from .filters import is_own_site, is_relevant
 from .models import Article
-from .sources import fetch_guardian_articles, fetch_newsapi_articles, fetch_rss_articles
+from .sources import (
+    fetch_gdelt_articles,
+    fetch_guardian_articles,
+    fetch_newsapi_articles,
+    fetch_rss_articles,
+)
 from .state import load_seen, mark_seen, save_seen, unseen_articles
 
 logging.basicConfig(
@@ -35,6 +40,7 @@ def _parse_published(value: str) -> datetime | None:
 def collect_articles() -> list[Article]:
     items = [
         *fetch_rss_articles(),
+        *fetch_gdelt_articles(),
         *fetch_guardian_articles(),
         *fetch_newsapi_articles(),
     ]

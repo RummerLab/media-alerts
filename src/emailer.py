@@ -51,7 +51,7 @@ def _html_body(articles: list[Article]) -> str:
         f"result{'s' if len(articles) != 1 else ''}</strong></p>"
         f"{joined}"
         "<p style='color:#888;font-size:12px'>RummerLab media digest · "
-        "Google News, Bing, The Conversation, optional Guardian/NewsAPI</p>"
+        "Google News, Bing, The Conversation, GDELT, optional Guardian/NewsAPI</p>"
         "</div>"
     )
 

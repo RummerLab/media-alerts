@@ -60,8 +60,9 @@ Add or update tests for code you change. Fix failures before finishing.
 
 ## Sources and env
 
-- Core sources are RSS (Google News AU/US/UK, Bing, The Conversation Atom)
+- Core sources are RSS (Google News AU/US/UK, Bing, The Conversation Atom) plus GDELT DOC 2.0 (no key)
 - Optional APIs: Guardian (`THE_GUARDIAN_API_KEY`), NewsAPI.org (`NEWS_API_ORG_KEY`)
+- GDELT failures must log and return `[]` — the API can be flaky; never fail the whole digest
 - Reserved optional keys in `.env.example` (not wired yet unless implemented): `NEWSAPI_AI_KEY`, `NEWSAPI_COM_KEY`, `GOOGLE_API_KEY`, `GOOGLE_CX_ID`, `SCRAPER_API_KEY`
 - Do **not** add full-page article scraping; ScraperAPI is only for exceptional fetch helpers (e.g. redirect resolution), never as a content source
 - Own sites (`rummerlab.com`, `jodierummer.com`, `physioshark.org`) stay excluded

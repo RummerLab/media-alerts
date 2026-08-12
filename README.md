@@ -25,6 +25,7 @@ That matches Google Alerts and this digest. Add a second Talkwalker alert for **
 | Google News RSS (UK) | Guardian / Independent UK editions |
 | Bing News RSS | Second crawler |
 | The Conversation author Atom | [Jodie L. Rummer](https://theconversation.com/profiles/jodie-l-rummer-711270/articles.atom) |
+| [GDELT](https://www.gdeltproject.org/) DOC 2.0 | Free global article search; no API key |
 | Guardian Open Platform | Optional `THE_GUARDIAN_API_KEY` |
 | NewsAPI.org | Optional `NEWS_API_ORG_KEY` (free tier: `/v2/top-headlines`) |
 | newsapi.ai / Google CSE / etc. | Keys in `.env.example`; sources not wired yet |
