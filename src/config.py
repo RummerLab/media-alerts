@@ -8,25 +8,11 @@ load_dotenv()
 QUERY = '"Jodie Rummer" OR RummerLab OR "Rummer Lab" OR Physioshark OR "Athletes of the Reef"'
 ENCODED_QUERY = quote_plus(QUERY)
 
-GOOGLE_NEWS_AU = (
-    "https://news.google.com/rss/search"
-    f"?q={ENCODED_QUERY}&hl=en-AU&gl=AU&ceid=AU:en"
-)
-GOOGLE_NEWS_US = (
-    "https://news.google.com/rss/search"
-    f"?q={ENCODED_QUERY}&hl=en&gl=US&ceid=US:en"
-)
-GOOGLE_NEWS_GB = (
-    "https://news.google.com/rss/search"
-    f"?q={ENCODED_QUERY}&hl=en-GB&gl=GB&ceid=GB:en"
-)
-BING_NEWS = (
-    "https://www.bing.com/news/search"
-    f"?q={ENCODED_QUERY}&format=rss"
-)
-CONVERSATION_ATOM = (
-    "https://theconversation.com/profiles/jodie-l-rummer-711270/articles.atom"
-)
+GOOGLE_NEWS_AU = f"https://news.google.com/rss/search?q={ENCODED_QUERY}&hl=en-AU&gl=AU&ceid=AU:en"
+GOOGLE_NEWS_US = f"https://news.google.com/rss/search?q={ENCODED_QUERY}&hl=en&gl=US&ceid=US:en"
+GOOGLE_NEWS_GB = f"https://news.google.com/rss/search?q={ENCODED_QUERY}&hl=en-GB&gl=GB&ceid=GB:en"
+BING_NEWS = f"https://www.bing.com/news/search?q={ENCODED_QUERY}&format=rss"
+CONVERSATION_ATOM = "https://theconversation.com/profiles/jodie-l-rummer-711270/articles.atom"
 
 RSS_FEEDS: list[dict[str, str | bool]] = [
     {"name": "Google News AU", "url": GOOGLE_NEWS_AU},
@@ -72,13 +58,16 @@ MAIL_TO = [
     if address.strip()
 ]
 MAIL_CC = [
-    address.strip()
-    for address in os.environ.get("MAIL_CC", "").split(",")
-    if address.strip()
+    address.strip() for address in os.environ.get("MAIL_CC", "").split(",") if address.strip()
 ]
 
 GUARDIAN_API_KEY = os.environ.get("THE_GUARDIAN_API_KEY", "").strip()
 NEWS_API_ORG_KEY = os.environ.get("NEWS_API_ORG_KEY", "").strip()
+NEWSAPI_AI_KEY = os.environ.get("NEWSAPI_AI_KEY", "").strip()
+NEWSAPI_COM_KEY = os.environ.get("NEWSAPI_COM_KEY", "").strip()
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "").strip()
+GOOGLE_CX_ID = os.environ.get("GOOGLE_CX_ID", "").strip()
+SCRAPER_API_KEY = os.environ.get("SCRAPER_API_KEY", "").strip()
 
 DIGEST_HOUR = int(os.environ.get("DIGEST_HOUR", "7"))
 DIGEST_MINUTE = int(os.environ.get("DIGEST_MINUTE", "0"))

@@ -26,7 +26,8 @@ That matches Google Alerts and this digest. Add a second Talkwalker alert for **
 | Bing News RSS | Second crawler |
 | The Conversation author Atom | [Jodie L. Rummer](https://theconversation.com/profiles/jodie-l-rummer-711270/articles.atom) |
 | Guardian Open Platform | Optional `THE_GUARDIAN_API_KEY` |
-| NewsAPI.org | Optional `NEWS_API_ORG_KEY` |
+| NewsAPI.org | Optional `NEWS_API_ORG_KEY` (free tier: `/v2/top-headlines`) |
+| newsapi.ai / Google CSE / etc. | Keys in `.env.example`; sources not wired yet |
 
 Generic outlet firehoses (whole ABC / SMH feeds) from the old Scholar scraper are **not** included. Those created more noise than Google Alerts. This tool only uses search feeds and APIs already scoped to Jodie/the lab.
 
@@ -60,6 +61,7 @@ Seen URLs are stored in `data/seen.json` so repeats are not emailed again.
 ```bash
 python -m venv .venv
 .venv/Scripts/activate   # Windows
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
+ruff check . --fix && ruff format .
 pytest
 ```

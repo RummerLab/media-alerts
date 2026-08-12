@@ -14,8 +14,6 @@ def is_relevant(article: Article) -> bool:
     if article.trusted:
         return True
     blob = " ".join(
-        part
-        for part in (article.title, article.snippet, article.source, article.url)
-        if part
+        part for part in (article.title, article.snippet, article.source, article.url) if part
     ).lower()
     return any(phrase in blob for phrase in RELEVANCE_PHRASES)
