@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta, timezone
 
 import requests
 
-from ..config import LOOKBACK_DAYS, NEWS_API_ORG_KEY, QUERY, USER_AGENT
+from ..config import NEWS_API_ORG_KEY, QUERY, USER_AGENT
 from ..models import Article
 from ..normalize import canonicalize_url
 
@@ -13,20 +12,21 @@ logger = logging.getLogger(__name__)
 
 
 def fetch_newsapi_articles() -> list[Article]:
+    """Fetch matching items from NewsAPI.org free-tier `/v2/top-headlines`.
+
+    The Developer plan returns 426 on `/v2/everything`; top-headlines is the
+    free-compatible search surface (keyword match within current headlines).
+    """
     if not NEWS_API_ORG_KEY:
         logger.info("NewsAPI skipped (no NEWS_API_ORG_KEY)")
         return []
 
-    since = (datetime.now(timezone.utc) - timedelta(days=LOOKBACK_DAYS)).date().isoformat()
     try:
         response = requests.get(
-            "https://newsapi.org/v2/everything",
+            "https://newsapi.org/v2/top-headlines",
             params={
                 "q": QUERY,
-                "from": since,
-                "language": "en",
-                "sortBy": "publishedAt",
-                "pageSize": 50,
+                "pageSize": 100,
                 "apiKey": NEWS_API_ORG_KEY,
             },
             headers={"User-Agent": USER_AGENT},

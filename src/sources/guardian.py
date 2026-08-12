@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import requests
 
@@ -17,7 +17,7 @@ def fetch_guardian_articles() -> list[Article]:
         logger.info("Guardian API skipped (no THE_GUARDIAN_API_KEY)")
         return []
 
-    since = (datetime.now(timezone.utc) - timedelta(days=LOOKBACK_DAYS)).date().isoformat()
+    since = (datetime.now(UTC) - timedelta(days=LOOKBACK_DAYS)).date().isoformat()
     try:
         response = requests.get(
             "https://content.guardianapis.com/search",

@@ -1,6 +1,6 @@
+from src.models import Article
 from src.normalize import canonicalize_url, unwrap_google_url
 from src.state import article_keys, unseen_articles
-from src.models import Article
 
 
 def test_unwraps_google_redirect():

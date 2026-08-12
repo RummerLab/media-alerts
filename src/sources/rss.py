@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from time import mktime
 
@@ -20,7 +20,7 @@ def _entry_datetime(entry: object) -> datetime | None:
         parsed = getattr(entry, attr, None)
         if parsed:
             try:
-                return datetime.fromtimestamp(mktime(parsed), tz=timezone.utc)
+                return datetime.fromtimestamp(mktime(parsed), tz=UTC)
             except (OverflowError, OSError, TypeError, ValueError):
                 pass
     for attr in ("published", "updated"):
@@ -30,8 +30,8 @@ def _entry_datetime(entry: object) -> datetime | None:
         try:
             stamp = parsedate_to_datetime(str(value))
             if stamp.tzinfo is None:
-                stamp = stamp.replace(tzinfo=timezone.utc)
-            return stamp.astimezone(timezone.utc)
+                stamp = stamp.replace(tzinfo=UTC)
+            return stamp.astimezone(UTC)
         except (TypeError, ValueError):
             continue
     return None
@@ -85,7 +85,10 @@ def fetch_feed(name: str, url: str, trusted: bool = False) -> list[Article]:
     try:
         response = requests.get(
             url,
-            headers={"User-Agent": USER_AGENT, "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml"},
+            headers={
+                "User-Agent": USER_AGENT,
+                "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml",
+            },
             timeout=30,
         )
         response.raise_for_status()

@@ -3,14 +3,19 @@ from __future__ import annotations
 import argparse
 import logging
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from .config import DIGEST_HOUR, DIGEST_MINUTE, LOOKBACK_DAYS, RUN_ON_START
 from .emailer import send_digest
 from .filters import is_own_site, is_relevant
 from .models import Article
-from .sources import fetch_guardian_articles, fetch_newsapi_articles, fetch_rss_articles
+from .sources import (
+    fetch_gdelt_articles,
+    fetch_guardian_articles,
+    fetch_newsapi_articles,
+    fetch_rss_articles,
+)
 from .state import load_seen, mark_seen, save_seen, unseen_articles
 
 logging.basicConfig(
@@ -26,8 +31,8 @@ def _parse_published(value: str) -> datetime | None:
     try:
         stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
         if stamp.tzinfo is None:
-            stamp = stamp.replace(tzinfo=timezone.utc)
-        return stamp.astimezone(timezone.utc)
+            stamp = stamp.replace(tzinfo=UTC)
+        return stamp.astimezone(UTC)
     except ValueError:
         return None
 
@@ -35,10 +40,11 @@ def _parse_published(value: str) -> datetime | None:
 def collect_articles() -> list[Article]:
     items = [
         *fetch_rss_articles(),
+        *fetch_gdelt_articles(),
         *fetch_guardian_articles(),
         *fetch_newsapi_articles(),
     ]
-    cutoff = datetime.now(timezone.utc) - timedelta(days=LOOKBACK_DAYS)
+    cutoff = datetime.now(UTC) - timedelta(days=LOOKBACK_DAYS)
     kept: list[Article] = []
     for article in items:
         if is_own_site(article.url):

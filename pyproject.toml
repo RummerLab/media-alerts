@@ -1,0 +1,24 @@
+[project]
+name = "media-alerts"
+description = "Daily RummerLab media mention digest"
+readme = "README.md"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q --tb=short"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+exclude = [".venv", ".git", "__pycache__", "data"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = [
+    "E501",  # line too long (fix incrementally)
+]
+
+[tool.ruff.format]
+quote-style = "double"

@@ -1,6 +1,5 @@
 from urllib.parse import parse_qs, urlparse, urlunparse
 
-
 TRACKING_PARAMS = {
     "utm_source",
     "utm_medium",
