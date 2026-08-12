@@ -1,0 +1,13 @@
+services:
+  digest:
+    build: .
+    container_name: rummerlab-media-alerts
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - TZ=${TZ:-Australia/Brisbane}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
