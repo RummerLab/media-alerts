@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.12.16-alpine3.24 AS build
+FROM python:3.15.0-alpine3.24 AS build
 
 WORKDIR /src
 
@@ -10,7 +10,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN --mount=type=bind,source=requirements.txt,target=requirements.txt \
     pip install --no-cache-dir --no-compile -r requirements.txt
 
-FROM python:3.12.16-alpine3.24 AS runtime
+FROM python:3.15.0-alpine3.24 AS runtime
 
 WORKDIR /app
 
