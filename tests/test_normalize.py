@@ -8,6 +8,17 @@ def test_unwraps_google_redirect():
     assert unwrap_google_url(wrapped) == "https://www.abc.net.au/news/story"
 
 
+def test_rejects_lookalike_google_host():
+    # endswith("google.com") alone would treat this as Google.
+    spoofed = "https://evilgoogle.com/url?q=https://www.abc.net.au/news/story"
+    assert unwrap_google_url(spoofed) == spoofed
+
+
+def test_rejects_non_http_google_target():
+    wrapped = "https://www.google.com/url?q=httpevil://example.com/payload"
+    assert unwrap_google_url(wrapped) == wrapped
+
+
 def test_strips_utm():
     url = "https://www.theguardian.com/environment/story?utm_source=rss&utm_medium=feed"
     assert canonicalize_url(url) == "https://www.theguardian.com/environment/story"
