@@ -13,12 +13,19 @@ TRACKING_PARAMS = {
 }
 
 
+def _is_google_host(host: str) -> bool:
+    # Require an exact google.com label (or subdomain). Plain endswith("google.com")
+    # would also match attacker hosts like "evilgoogle.com".
+    return host == "google.com" or host.endswith(".google.com")
+
+
 def unwrap_google_url(url: str) -> str:
     parsed = urlparse(url)
     host = (parsed.hostname or "").lower()
-    if host.endswith("google.com") and parsed.path == "/url":
+    if _is_google_host(host) and parsed.path == "/url":
         target = parse_qs(parsed.query).get("q", [""])[0]
-        if target.startswith("http"):
+        # Require a real http(s) scheme; startswith("http") accepts "httpevil://…".
+        if target.startswith(("http://", "https://")):
             return target
     return url
 

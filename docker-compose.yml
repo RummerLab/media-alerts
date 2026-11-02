@@ -2,6 +2,8 @@ services:
   digest:
     build: .
     container_name: rummerlab-media-alerts
+    # Must own ./data on the host, or seen.json can't be saved and items repeat.
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
     env_file:
       - path: .env
         required: false

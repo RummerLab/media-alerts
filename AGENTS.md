@@ -67,6 +67,7 @@ Add or update tests for code you change. Fix failures before finishing.
 - Do **not** add full-page article scraping; ScraperAPI is only for exceptional fetch helpers (e.g. redirect resolution), never as a content source
 - Own sites (`rummerlab.com`, `jodierummer.com`, `physioshark.org`) stay excluded
 - Seen URLs live in `data/seen.json` — do not wipe production state casually
+- The container runs non-root (`APP_UID`/`APP_GID` in compose, default 1000). The `./data` bind mount must be writable by that uid, or `seen.json` can't be saved and items are re-emailed
 
 ## README and docs
 
