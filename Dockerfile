@@ -8,7 +8,6 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 RUN --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    --mount=type=cache,target=/root/.cache/pip \
     pip install --no-cache-dir --no-compile -r requirements.txt
 
 FROM python:3.12.16-alpine3.24 AS runtime
@@ -20,10 +19,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     TZ=Australia/Brisbane \
     PATH="/opt/venv/bin:$PATH"
 
+# uid/gid 1000 matches the usual first host user, so the ./data bind mount stays
+# writable; compose can override it via APP_UID/APP_GID when the host differs.
 RUN --mount=type=cache,target=/etc/apk/cache,sharing=locked \
     apk add tzdata \
-    && addgroup -S -g 1001 appgroup \
-    && adduser -S -u 1001 -G appgroup appuser \
+    && addgroup -S -g 1000 appgroup \
+    && adduser -S -u 1000 -G appgroup appuser \
     && mkdir -p /app/data \
     && chown appuser:appgroup /app/data
 

@@ -57,6 +57,12 @@ docker compose run --rm digest python -m src --dry-run
 
 Seen URLs are stored in `data/seen.json` so repeats are not emailed again.
 
+The container runs as a non-root user (`APP_UID`/`APP_GID`, default `1000:1000`), and that user must be able to write `./data`. If your host user isn't 1000, set `APP_UID`/`APP_GID` in `.env` to the output of `id -u` / `id -g`. Images up to v0.0.2 ran as root, so an existing `data/` may be root-owned. Fix it once before upgrading:
+
+```bash
+sudo chown -R "${APP_UID:-1000}:${APP_GID:-1000}" data
+```
+
 ## Local tests
 
 ```bash
