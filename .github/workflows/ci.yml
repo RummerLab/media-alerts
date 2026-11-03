@@ -1,48 +1,34 @@
 name: CI
-
-permissions:
-    contents: read
-
 on:
-    push:
-        branches: [main, master]
-    pull_request:
-        branches: [main, master]
-
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        default: ''
+permissions:
+  contents: read
 jobs:
-    lint:
-        name: Ruff
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v7
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - run: pip install uv==0.13.7
+      - run: uv pip sync --system --require-hashes --exclude-newer 3d  requirements-dev.lock
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: python -m pytest tests/
 
-            - name: Set up Python
-              uses: actions/setup-python@v7.1.0
-              with:
-                  python-version: '3.12'
 
-            - name: Install lint dependencies
-              run: pip install -r requirements-dev.txt
-
-            - name: Lint
-              run: ruff check .
-
-            - name: Format check
-              run: ruff format --check .
-
-    test:
-        name: Pytest
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v7
-
-            - name: Set up Python
-              uses: actions/setup-python@v7.1.0
-              with:
-                  python-version: '3.12'
-
-            - name: Install dependencies
-              run: pip install -r requirements-dev.txt
-
-            - name: Run tests
-              run: pytest -q
+  images:
+    uses: ./.github/workflows/images.yml
+    with:
+      ref: ${{ inputs.ref }}
