@@ -63,6 +63,34 @@ def next_version(project_version: str, tags: list[str]) -> str:
     return f"{major}.{minor}.{patch + 1}"
 
 
+def should_advance_latest(tag: str, published_tags: list[str]) -> bool:
+    """Older release retries must not downgrade Watchtower deployments."""
+    match = VERSION.fullmatch(tag)
+    if match is None:
+        raise ValueError(f"Not a stable version tag: {tag}")
+    candidate = tuple(map(int, match.groups()))
+    return all(
+        candidate >= tuple(map(int, published.groups()))
+        for value in published_tags
+        if (published := VERSION.fullmatch(value))
+    )
+
+
+def latest(root: Path, tag: str) -> None:
+    """Compare all published stable releases before updating the latest image."""
+    tags = run(
+        "gh",
+        "api",
+        "repos/{owner}/{repo}/releases",
+        "--paginate",
+        "--jq",
+        ".[] | select(.draft == false and .prerelease == false) | .tag_name",
+        cwd=root,
+        capture=True,
+    ).splitlines()
+    output(advance_latest=should_advance_latest(tag, tags))
+
+
 def run(*command, cwd=None, capture=False):
     """Run a tool and fail the workflow if resolution or validation fails."""
     executable = shutil.which(command[0])
@@ -196,10 +224,16 @@ def bump(root: Path) -> None:
 def main() -> None:
     """Run from the repository root: update, or bump after validation."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("update", "bump"))
+    parser.add_argument("command", choices=("update", "bump", "latest"))
+    parser.add_argument("--tag", help="Stable release tag to consider for latest")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
-    (update if args.command == "update" else bump)(root)
+    if args.command == "latest":
+        if args.tag is None:
+            parser.error("latest requires --tag")
+        latest(root, args.tag)
+    else:
+        (update if args.command == "update" else bump)(root)
 
 
 if __name__ == "__main__":

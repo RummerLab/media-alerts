@@ -4,6 +4,7 @@ from scripts.dependency_release import (
     frontend_graph,
     lock_graph,
     next_version,
+    should_advance_latest,
     upgrade_constraints,
 )
 
@@ -58,6 +59,32 @@ def test_single_component_calendar_versions():
     assert (
         upgrade_constraints("openai-whisper==20250625\n") == "openai-whisper>=20250625,<20250626\n"
     )
+
+
+def test_older_release_retry_cannot_downgrade_latest():
+    assert not should_advance_latest("v0.0.3", ["v0.0.4", "v0.0.3"])
+    assert not should_advance_latest("v1.9.0", ["v1.10.0"])
+    assert should_advance_latest("v1.10.0", ["v1.9.0", "v1.10.0"])
+    assert should_advance_latest("v1.10.0", ["v1.9.0", "v2.0.0-rc.1"])
+    assert should_advance_latest("v0.0.3", [])
+
+
+def test_latest_queries_all_published_releases(tmp_path, monkeypatch):
+    from scripts import dependency_release
+
+    result = tmp_path / "outputs"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(result))
+
+    def fake_github(*command, cwd=None, capture=False):
+        assert command[:3] == ("gh", "api", "repos/{owner}/{repo}/releases")
+        assert "--paginate" in command
+        assert "select(.draft == false and .prerelease == false)" in command[-1]
+        assert capture
+        return "v0.0.4\nv0.0.3\n"
+
+    monkeypatch.setattr(dependency_release, "run", fake_github)
+    dependency_release.latest(tmp_path, "v0.0.3")
+    assert result.read_text() == "advance_latest=false\n"
 
 
 def test_updater_enforces_age_and_production_only_release(tmp_path, monkeypatch):
