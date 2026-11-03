@@ -1,0 +1,7 @@
+# Local builds; deployment uses docker-compose.yml alone.
+services:
+  digest:
+    build: .
+    image: media-alerts:local
+    labels:
+      com.centurylinklabs.watchtower.enable: 'false'

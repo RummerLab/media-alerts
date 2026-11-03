@@ -4,11 +4,13 @@ FROM python:3.15.0-alpine3.24 AS build
 
 WORKDIR /src
 
+COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /usr/local/bin/uv
+
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    pip install --no-cache-dir --no-compile -r requirements.txt
+RUN --mount=type=bind,source=requirements.lock,target=requirements.lock \
+    uv pip install --python /opt/venv/bin/python --require-hashes --exclude-newer 3d -r requirements.lock
 
 FROM python:3.15.0-alpine3.24 AS runtime
 
